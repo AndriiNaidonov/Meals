@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
+<meta name="theme-color" content="#12151a">
+<title>Харчування</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<style>
+:root{
+  --bg:#12151a; --bg2:#1a1f27; --bg3:#232a34; --line:#2e3742;
+  --tx:#e8edf3; --tx2:#a6b2c1; --tx3:#7d8a9c;
+  --ac:#5eb3f6; --ok:#4ec98a; --warn:#f2b23c; --bad:#f2685c; --pur:#b08cf5;
+  --r:14px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--tx);
+  font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  padding-bottom:calc(72px + env(safe-area-inset-bottom));overscroll-behavior-y:contain}
+h1,h2,h3{margin:0;font-weight:650}
+button{font:inherit;color:inherit;background:none;border:none;padding:0;cursor:pointer}
+input,select,textarea{font:inherit;color:var(--tx);background:var(--bg3);border:1px solid var(--line);border-radius:10px;padding:9px 11px;width:100%}
+input:focus,select:focus{outline:none;border-color:var(--ac)}
+select{appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8'><path d='M1 1l5 5 5-5' stroke='%23a6b2c1' stroke-width='1.6' fill='none' stroke-linecap='round'/></svg>");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+.muted{color:var(--tx2)}.dim{color:var(--tx3)}
+.small{font-size:13px}.tiny{font-size:11.5px}
+.row{display:flex;align-items:center;gap:10px}
+.between{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.wrap{padding:0 14px}
+
+header{position:sticky;top:0;z-index:30;background:rgba(18,21,26,.88);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);padding:calc(10px + env(safe-area-inset-top)) 14px 10px}
+header h1{font-size:19px;letter-spacing:-.2px}
+.hsub{font-size:12.5px;color:var(--tx2);margin-top:1px}
+.iconbtn{width:31px;height:31px;border-radius:9px;background:var(--bg3);display:grid;place-items:center;font-size:15px;flex:0 0 auto;color:var(--tx2)}
+
+.card{background:var(--bg2);border:1px solid var(--line);border-radius:var(--r);padding:13px}
+.card+.card{margin-top:10px}
+.sect{margin:20px 0 9px;font-size:12px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--tx3)}
+.empty{padding:18px 4px;color:var(--tx3);font-size:13.5px;text-align:center}
+.bar{height:7px;border-radius:99px;background:var(--bg3);overflow:hidden}
+.bar>i{display:block;height:100%;border-radius:99px;transition:width .35s}
+
+.btn{display:block;width:100%;text-align:center;padding:12px;border-radius:12px;background:var(--bg3);border:1px solid var(--line);font-weight:600;font-size:14.5px}
+.btn.pri{background:var(--ac);border-color:var(--ac);color:#06121d}
+.btn.sm{padding:9px;font-size:13.5px}
+.btn.gh{background:none}
+.chip{font-size:12.5px;padding:6px 11px;border-radius:99px;background:var(--bg3);border:1px solid var(--line);color:var(--tx2)}
+.chip.on{background:var(--ac);border-color:var(--ac);color:#06121d;font-weight:600}
+.chip.mini{font-size:11px;padding:4px 9px}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;padding:3px 9px;border-radius:99px;background:var(--bg3);color:var(--tx2)}
+
+nav{position:fixed;bottom:0;left:0;right:0;z-index:40;display:grid;grid-template-columns:repeat(4,1fr);
+  background:rgba(18,21,26,.94);backdrop-filter:blur(16px);border-top:1px solid var(--line);
+  padding:7px 4px calc(7px + env(safe-area-inset-bottom))}
+nav button{display:flex;flex-direction:column;align-items:center;gap:3px;padding:5px 2px;color:var(--tx3);font-size:10.5px;font-weight:600}
+nav button.on{color:var(--ac)}
+nav svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+
+.lrow{display:flex;align-items:center;gap:11px;padding:11px 13px;border-bottom:1px solid var(--line)}
+.lrow:last-child{border-bottom:none}
+.lname{flex:1;font-size:14px;min-width:0}
+.lqty{font-size:13px;color:var(--tx2);font-variant-numeric:tabular-nums;flex:0 0 auto;text-align:right}
+.qadd{width:32px;height:32px;border-radius:10px;background:var(--bg3);border:1px solid var(--line);display:grid;place-items:center;font-size:19px;color:var(--ac);flex:0 0 auto;font-weight:600}
+
+.sheet{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.6);display:none;align-items:flex-end}
+.sheet.open{display:flex}
+.sheetbox{width:100%;max-height:90vh;overflow:auto;background:var(--bg2);border-radius:20px 20px 0 0;border-top:1px solid var(--line);
+  padding:16px 14px calc(20px + env(safe-area-inset-bottom));animation:up .22s ease}
+@keyframes up{from{transform:translateY(30px);opacity:.4}}
+.grab{width:38px;height:4px;border-radius:99px;background:var(--line);margin:0 auto 14px}
+label.f{display:block;font-size:12px;color:var(--tx2);margin:0 0 5px;font-weight:600}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.f3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px}
+hr{border:none;border-top:1px solid var(--line);margin:14px 0}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+td{padding:7px 0;border-bottom:1px solid var(--line)}
+td:last-child{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr:last-child td{border-bottom:none}
+.hide{display:none!important}
+
+.hdot{display:inline-block;width:9px;height:9px;border-radius:99px;vertical-align:baseline;margin-right:2px}
+.h5{background:#4ec98a}.h4{background:#8fd06a}.h3{background:#c9c95e}.h2{background:#f2b23c}.h1{background:#f2685c}
+
+.ringwrap{display:flex;gap:16px;align-items:center}
+.ring{position:relative;width:118px;height:118px;flex:0 0 auto}
+.ring svg{transform:rotate(-90deg)}
+.ring .mid{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.ring .mid b{font-size:22px;letter-spacing:-.5px;line-height:1.1}
+.ring .mid span{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px}
+.macro{margin-top:8px}
+.macro .between{font-size:12.5px}
+
+.mealhead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:16px 2px 7px}
+.mealhead b{font-size:13.5px}
+.mealhead .k{font-size:12.5px;color:var(--tx2);font-variant-numeric:tabular-nums}
+
+.chart{position:relative;height:110px;margin-top:6px}
+.chart .band{position:absolute;left:0;right:0;background:rgba(94,179,246,.07);border-top:1px dashed rgba(94,179,246,.4);border-bottom:1px dashed rgba(94,179,246,.4)}
+.chart .cols{position:absolute;inset:0;display:flex;align-items:flex-end;gap:4px}
+.chart .cols>div{flex:1;border-radius:4px 4px 2px 2px;background:var(--bg3);min-height:3px}
+.chart .cols>div.in{background:var(--ac)}
+.chart .cols>div.over{background:var(--warn)}
+.chart .cols>div.under{background:#3d6d94}
+.spark{display:flex;align-items:flex-end;gap:4px;height:44px}
+.spark>div{flex:1;border-radius:3px 3px 2px 2px;background:var(--ac);min-height:3px}
+.star{font-size:17px;color:var(--tx3);flex:0 0 auto;padding:4px}
+.star.on{color:var(--warn)}
+.entry-k{font-size:15px;font-weight:600;font-variant-numeric:tabular-nums}
+.stat3{display:flex}
+.stat3>div{flex:1;text-align:center}
+.stat3 b{font-size:19px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="between">
+    <div>
+      <h1 id="hTitle">Щоденник</h1>
+      <div class="hsub" id="hSub"></div>
+    </div>
+    <button class="iconbtn" onclick="openSettings()" aria-label="Налаштування">⚙</button>
+  </div>
+</header>
+
+<main id="view" class="wrap"></main>
+
+<nav>
+  <button data-t="diary" onclick="go('diary')"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg>Щоденник</button>
+  <button data-t="base" onclick="go('base')"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.5-4.5"/></svg>База</button>
+  <button data-t="spend" onclick="go('spend')"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h4"/></svg>Витрати</button>
+  <button data-t="stats" onclick="go('stats')"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Аналітика</button>
+</nav>
+
+<div class="sheet" id="sheet" onclick="if(event.target===this)closeSheet()">
+  <div class="sheetbox"><div class="grab"></div><div id="sheetContent"></div></div>
+</div>
+
+<script src="data.js"></script>
+<script>
+/* ══════════════════════════════════════════════════════════════════
+   СТАН  (ключ той самий, що у v2 — записи не втрачаються)
+   ══════════════════════════════════════════════════════════════════ */
+const KEY='meals.v2';
+const D=window.SEED;
+
+const blank=()=>({
+  profile:{ sex:'m', age:35, height:180, weight:80, activity:1.3, mode:'mild', workoutPct:0.5 },
+  fav:['chicken','buckwheat_c','greek','cottage5','banana','coffee','canteen_full','yogurt_bowl'],
+  custom:{}, diary:{}, workout:{}, expense:{}, weight:{}
+});
+let S=load();
+function load(){
+  try{
+    const raw=localStorage.getItem(KEY); if(!raw) return blank();
+    const s=JSON.parse(raw), b=blank();
+    const out={...b,...s, profile:{...b.profile,...(s.profile||{})}};
+    if(out.profile.workoutPct==null) out.profile.workoutPct=0.5;
+    return out;
+  }catch(e){ return blank(); }
+}
+let saveT;
+function save(){ clearTimeout(saveT); saveT=setTimeout(()=>localStorage.setItem(KEY,JSON.stringify(S)),120); }
+
+function P(id){ return S.custom[id]||D.products[id]; }
+function allIds(){ return [...Object.keys(D.products),...Object.keys(S.custom)]; }
+
+/* ══════════════════════════════════════════════════════════════════
+   ДАТИ
+   ══════════════════════════════════════════════════════════════════ */
+const DOW=['Нд','Пн','Вт','Ср','Чт','Пт','Сб'];
+const MON=['січня','лютого','березня','квітня','травня','червня','липня','серпня','вересня','жовтня','листопада','грудня'];
+const MONN=['Січень','Лютий','Березень','Квітень','Травень','Червень','Липень','Серпень','Вересень','Жовтень','Листопад','Грудень'];
+function iso(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function parse(s){ const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); }
+function addDays(s,n){ const d=parse(s); d.setDate(d.getDate()+n); return iso(d); }
+function human(s){ const d=parse(s); return d.getDate()+' '+MON[d.getMonth()]; }
+let TODAY=iso(new Date());
+let viewDate=TODAY;
+let viewMonth=TODAY.slice(0,7);
+
+/* ══════════════════════════════════════════════════════════════════
+   ПРИЙОМИ ЇЖІ (автогрупування за часом)
+   ══════════════════════════════════════════════════════════════════ */
+const MEALS={ b:'Сніданок', l:'Обід', d:'Вечеря', s:'Перекус' };
+const MEAL_ORDER=['b','l','d','s'];
+function mealOf(time){
+  if(!time) return 's';
+  if(time<'11:30') return 'b';
+  if(time<'16:00') return 'l';
+  if(time<'20:00') return 'd';
+  return 's';
+}
+function mealFor(e){ return e.meal || mealOf(e.time); }
+
+/* ══════════════════════════════════════════════════════════════════
+   НОРМА КАЛОРІЙ
+   ══════════════════════════════════════════════════════════════════ */
+const MODES={
+  balance:{name:'Баланс',  def:0,   hint:'підтримання ваги'},
+  mild:   {name:'Помірний',def:330, hint:'≈ −300 г/тиждень'},
+  mid:    {name:'Середній',def:550, hint:'≈ −500 г/тиждень'},
+  fast:   {name:'Швидкий', def:770, hint:'≈ −700 г/тиждень — обережно при бігу'}
+};
+function bmr(){
+  const p=S.profile;
+  return Math.round(10*p.weight + 6.25*p.height - 5*p.age + (p.sex==='m'?5:-161));
+}
+function maintain(){ return Math.round(bmr()*S.profile.activity); }
+function baseTarget(){ return Math.max(maintain()-MODES[S.profile.mode].def, bmr()); }
+/** Скільки з тренування зараховується в ціль */
+function workoutCounted(date){ return Math.round((+S.workout[date]||0)*S.profile.workoutPct); }
+function kcalTarget(date){ return baseTarget()+workoutCounted(date); }
+function proteinTarget(){ return Math.round(1.7*S.profile.weight); }
+function fatTarget(date){ return Math.round(kcalTarget(date)*0.275/9); }
+function carbTarget(date){ return Math.max(0,Math.round((kcalTarget(date)-proteinTarget()*4-fatTarget(date)*9)/4)); }
+
+/* ══════════════════════════════════════════════════════════════════
+   РОЗРАХУНКИ
+   ══════════════════════════════════════════════════════════════════ */
+function isUnit(p){ return p.unit==='шт'||p.unit==='порція'; }
+function calc(pid,qty){
+  const p=P(pid); if(!p) return {k:0,p:0,f:0,c:0};
+  const per=isUnit(p)?1:100;
+  return { k:p.kcal*qty/per, p:p.p*qty/per, f:p.f*qty/per, c:p.c*qty/per };
+}
+function entries(date){ return S.diary[date]||[]; }
+function dayTotals(date){
+  let k=0,pr=0,f=0,c=0,fv=0,hSum=0;
+  for(const e of entries(date)){
+    k+=e.k; pr+=e.p; f+=e.f; c+=e.c; hSum+=e.k*(e.h||3);
+    const prod=P(e.pid);
+    if(prod&&(prod.cat==='овочі'||prod.cat==='фрукти'))
+      fv += isUnit(prod)?e.qty*(prod.cat==='фрукти'?130:150):e.qty;
+  }
+  return {k:Math.round(k),p:Math.round(pr),f:Math.round(f),c:Math.round(c),avgH:k?hSum/k:0,fv:Math.round(fv)};
+}
+function healthIndex(date){
+  const t=dayTotals(date); if(!t.k) return null;
+  let score=(t.avgH-1)/4*80;
+  const parts={base:Math.round(score),veg:0,prot:0};
+  if(t.fv>=400){score+=10;parts.veg=10;}
+  if(t.p>=proteinTarget()*0.9){score+=10;parts.prot=10;}
+  return {score:Math.round(Math.min(100,score)),parts,t};
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   НАВІГАЦІЯ / ХЕЛПЕРИ
+   ══════════════════════════════════════════════════════════════════ */
+let tab='diary';
+function go(t){ tab=t; render(); window.scrollTo(0,0); }
+function render(){
+  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===tab));
+  ({diary:vDiary,base:vBase,spend:vSpend,stats:vStats}[tab])(document.getElementById('view'));
+}
+function setHead(t,s){ document.getElementById('hTitle').textContent=t; document.getElementById('hSub').innerHTML=s||''; }
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const r1=n=>Math.round(n*10)/10;
+function hdot(h){ return `<span class="hdot h${h||3}"></span>`; }
+function fmtQ(e){ const p=P(e.pid); return isUnit(p||{unit:'шт'})?e.qty+' '+((p?.unit==='порція')?'порц.':'шт'):Math.round(e.qty)+' '+(p?.unit||'г'); }
+function nowTime(){ return new Date().toTimeString().slice(0,5); }
+function sheet(html){ document.getElementById('sheetContent').innerHTML=html; document.getElementById('sheet').classList.add('open'); }
+function closeSheet(){ document.getElementById('sheet').classList.remove('open'); }
+
+/* ══════════════════════════════════════════════════════════════════
+   ЕКРАН: ЩОДЕННИК
+   ══════════════════════════════════════════════════════════════════ */
+function vDiary(V){
+  const d=parse(viewDate), t=dayTotals(viewDate);
+  const target=kcalTarget(viewDate), left=target-t.k;
+  const hi=healthIndex(viewDate);
+  const w=+S.workout[viewDate]||0, wc=workoutCounted(viewDate);
+  setHead(viewDate===TODAY?'Сьогодні':DOW[d.getDay()]+', '+human(viewDate), 'Ціль '+target+' ккал');
+
+  const pT=proteinTarget(), fT=fatTarget(viewDate), cT=carbTarget(viewDate);
+  const ringPct=Math.min(1,t.k/target);
+  const ringCol=t.k>target?'var(--warn)':'var(--ac)';
+  const R=52, CIRC=2*Math.PI*R;
+
+  let h=`<div class="between" style="margin:12px 0">
+    <button class="chip" onclick="shiftDay(-1)">‹ ${human(addDays(viewDate,-1))}</button>
+    ${viewDate===TODAY?'<span class="pill">сьогодні</span>':'<button class="chip" onclick="viewDate=TODAY;render()">до сьогодні</button>'}
+    <button class="chip" onclick="shiftDay(1)">${human(addDays(viewDate,1))} ›</button>
+  </div>`;
+
+  h+=`<div class="card"><div class="ringwrap">
+    <div class="ring">
+      <svg width="118" height="118">
+        <circle cx="59" cy="59" r="${R}" fill="none" stroke="var(--bg3)" stroke-width="10"/>
+        <circle cx="59" cy="59" r="${R}" fill="none" stroke="${ringCol}" stroke-width="10"
+          stroke-linecap="round" stroke-dasharray="${CIRC}" stroke-dashoffset="${CIRC*(1-ringPct)}"/>
+      </svg>
+      <div class="mid">
+        <b style="color:${left<0?'var(--warn)':'var(--tx)'}">${left>=0?left:'+'+(-left)}</b>
+        <span>${left>=0?'ще можна':'перебір'}</span>
+        <span class="dim" style="font-size:10px;margin-top:2px">${t.k} / ${target}</span>
+      </div>
+    </div>
+    <div style="flex:1;min-width:0">
+      ${macroBar('Білки',t.p,pT,'var(--ok)')}
+      ${macroBar('Жири',t.f,fT,'var(--warn)')}
+      ${macroBar('Вуглеводи',t.c,cT,'var(--pur)')}
+    </div>
+  </div>
+  ${w?`<div class="between small" style="margin-top:10px;padding-top:10px;border-top:1px solid var(--line)">
+    <span class="muted">🏃 Активність +${w} ккал</span>
+    <span class="dim">у ціль +${wc} (${Math.round(S.profile.workoutPct*100)}%)</span>
+  </div>`:''}
+  <div class="between" style="margin-top:${w?'8':'12'}px;${w?'':'padding-top:10px;border-top:1px solid var(--line)'}">
+    <span class="small muted">Індекс корисності дня</span>
+    ${hi?`<button class="chip ${hi.score>=70?'on':''}" onclick="explainIndex('${viewDate}')"
+      style="${hi.score>=70?'':(hi.score>=45?'color:var(--warn);border-color:var(--warn)':'color:var(--bad);border-color:var(--bad)')}">
+      ${hi.score} / 100 <span style="opacity:.7">›</span></button>`:'<span class="dim small">—</span>'}
+  </div></div>`;
+
+  // тренування (окремий рядок, не картка)
+  h+=`<div class="between" style="margin:12px 2px 0">
+    <span class="small muted">🏃 Тренування</span>
+    <button class="chip ${w?'on':''}" onclick="askWorkout()">${w?w+' ккал':'+ додати'}</button>
+  </div>`;
+
+  // прийоми їжі
+  const es=entries(viewDate);
+  const groups={}; MEAL_ORDER.forEach(m=>groups[m]=[]);
+  es.forEach((e,i)=>groups[mealFor(e)].push([e,i]));
+  const yGroups={}; MEAL_ORDER.forEach(m=>yGroups[m]=entries(addDays(viewDate,-1)).filter(e=>mealFor(e)===m));
+
+  let any=false;
+  for(const m of MEAL_ORDER){
+    const g=groups[m];
+    const gk=Math.round(g.reduce((a,[e])=>a+e.k,0));
+    const canRepeat=!g.length&&yGroups[m].length;
+    if(!g.length&&!canRepeat) continue;
+    any=true;
+    h+=`<div class="mealhead"><b>${MEALS[m]}</b>
+      <div class="row" style="gap:8px">
+        ${g.length?`<button class="chip mini" onclick="saveAsDish('${m}')">зберегти як страву</button>`:''}
+        ${canRepeat?`<button class="chip mini" onclick="repeatYesterday('${m}')">↻ з учора (${Math.round(yGroups[m].reduce((a,e)=>a+e.k,0))} ккал)</button>`:''}
+        ${g.length?`<span class="k">${gk} ккал</span>`:''}
+      </div></div>`;
+    if(g.length){
+      h+='<div class="card" style="padding:0">';
+      for(const [e,i] of g){
+        h+=`<div class="lrow" onclick="editEntry(${i})">
+          <div class="lname">${hdot(e.h)}${esc(e.name)}
+            <div class="tiny dim">${fmtQ(e)} · Б ${r1(e.p)} · Ж ${r1(e.f)} · В ${r1(e.c)}${e.time?' · '+e.time:''}</div></div>
+          <div class="entry-k">${Math.round(e.k)}</div>
+        </div>`;
+      }
+      h+='</div>';
+    }
+  }
+  if(!any) h+='<div class="empty">Ще нічого не записано.<br>Обране і нещодавні — одразу у формі додавання.</div>';
+
+  h+='<button class="btn pri" style="margin-top:14px" onclick="openAdd()">+ Додати їжу</button>';
+  V.innerHTML=h;
+}
+function macroBar(name,val,target,col){
+  const pct=Math.min(100,val/target*100), over=val>target*1.15;
+  return `<div class="macro">
+    <div class="between"><span class="muted">${name}</span>
+      <span class="dim" style="font-variant-numeric:tabular-nums">${Math.round(val)} / ${target} г</span></div>
+    <div class="bar" style="margin-top:4px"><i style="width:${pct}%;background:${over?'var(--bad)':col}"></i></div>
+  </div>`;
+}
+function shiftDay(n){ viewDate=addDays(viewDate,n); render(); }
+
+function explainIndex(date){
+  const hi=healthIndex(date); if(!hi) return;
+  sheet(`<h2 style="font-size:17px;margin-bottom:10px">Індекс корисності: ${hi.score}</h2>
+    <table>
+      <tr><td>Якість їжі (оцінки продуктів, зважені за ккал)</td><td>${hi.parts.base} / 80</td></tr>
+      <tr><td>Овочі та фрукти ≥ 400 г <span class="dim">(${hi.t.fv} г)</span></td><td>${hi.parts.veg} / 10</td></tr>
+      <tr><td>Білок ≥ 90% цілі <span class="dim">(${hi.t.p} із ${proteinTarget()} г)</span></td><td>${hi.parts.prot} / 10</td></tr>
+    </table>
+    <div class="tiny dim" style="margin-top:12px">Кожен продукт має оцінку 1–5 (кольорова крапка). 70+ — добре, 45–69 — нормально. Одна шаурма день не «псує».</div>
+    <button class="btn gh sm" style="margin-top:12px" onclick="closeSheet()">Зрозуміло</button>`);
+}
+function askWorkout(){
+  const w=+S.workout[viewDate]||0;
+  sheet(`<h2 style="font-size:17px;margin-bottom:12px">Тренування</h2>
+    <label class="f">Витрачено ккал (з фітнес-застосунку)</label>
+    <input id="wk" type="number" inputmode="numeric" value="${w||''}" placeholder="0">
+    <div class="tiny dim" style="margin-top:8px">У ціль зараховується ${Math.round(S.profile.workoutPct*100)}% (трекери завищують витрати). Відсоток змінюється в налаштуваннях.</div>
+    <button class="btn pri" style="margin-top:12px" onclick="saveWorkout()">Зберегти</button>
+    ${w?'<button class="btn gh sm" style="margin-top:8px;color:var(--bad)" onclick="delWorkout()">Прибрати</button>':''}`);
+}
+function saveWorkout(){ const v=+document.getElementById('wk').value||0; if(v>0)S.workout[viewDate]=v; else delete S.workout[viewDate]; save(); closeSheet(); render(); }
+function delWorkout(){ delete S.workout[viewDate]; save(); closeSheet(); render(); }
+
+function repeatYesterday(m){
+  const y=entries(addDays(viewDate,-1)).filter(e=>mealFor(e)===m);
+  const list=S.diary[viewDate]=S.diary[viewDate]||[];
+  for(const e of y) list.push({...e, time:nowTime(), meal:m});
+  save(); render();
+}
+function saveAsDish(m){
+  const g=entries(viewDate).filter(e=>mealFor(e)===m);
+  if(!g.length) return;
+  const k=g.reduce((a,e)=>a+e.k,0), pr=g.reduce((a,e)=>a+e.p,0),
+        f=g.reduce((a,e)=>a+e.f,0), c=g.reduce((a,e)=>a+e.c,0);
+  const hAvg=Math.round(g.reduce((a,e)=>a+e.k*(e.h||3),0)/Math.max(k,1));
+  sheet(`<h2 style="font-size:17px;margin-bottom:6px">Зберегти як страву</h2>
+    <div class="tiny dim" style="margin-bottom:12px">${g.map(e=>esc(e.name)).join(' + ')}<br>
+      ${Math.round(k)} ккал · Б ${Math.round(pr)} · Ж ${Math.round(f)} · В ${Math.round(c)}</div>
+    <label class="f">Назва страви</label>
+    <input id="dishN" placeholder="Мій ${MEALS[m].toLowerCase()}">
+    <button class="btn pri" style="margin-top:12px" onclick="confirmSaveDish('${m}',${Math.round(k)},${r1(pr)},${r1(f)},${r1(c)},${Math.min(5,Math.max(1,hAvg))})">Зберегти в базу</button>`);
+}
+function confirmSaveDish(m,k,pr,f,c,hAvg){
+  const name=document.getElementById('dishN').value.trim()||('Мій '+MEALS[m].toLowerCase());
+  const g=entries(viewDate).filter(e=>mealFor(e)===m);
+  S.custom['c_'+Date.now()]={ name, unit:'порція', kcal:k, p:pr, f, c, h:hAvg, portion:1,
+    cat:'готові страви', ingredients:g.map(e=>({pid:e.pid,qty:e.qty,name:e.name})) };
+  save(); closeSheet(); render();
+}
+
+/* ── додавання їжі (2 тапи для обраного/нещодавнього) ── */
+let pickQ='', pickMode='diary';   // 'diary' | 'dish'
+function openAdd(){ pickQ=''; pickMode='diary'; renderPick(); }
+function renderPick(){
+  let h=`<h2 style="font-size:17px;margin-bottom:10px">${pickMode==='dish'?'Інгредієнт страви':'Що ти їв?'}</h2>
+    <input id="pickQ" placeholder="Пошук: гречка, шаурма, капучино…" value="${esc(pickQ)}"
+      oninput="pickQ=this.value;renderPickList()" autocomplete="off">
+    <div id="pickList" style="margin-top:10px">${pickListHtml()}</div>
+    ${pickMode==='diary'?`<button class="btn sm" style="margin-top:12px" onclick="newProduct('fromPick')">+ Створити новий продукт</button>`:
+      `<button class="btn gh sm" style="margin-top:12px" onclick="renderDish()">‹ Назад до страви</button>`}`;
+  sheet(h);
+  setTimeout(()=>{const el=document.getElementById('pickQ'); if(el&&!('ontouchstart' in window)) el.focus();},50);
+}
+function renderPickList(){ const el=document.getElementById('pickList'); if(el) el.innerHTML=pickListHtml(); }
+function pickListHtml(){
+  const q=pickQ.trim().toLowerCase();
+  const match=id=>P(id).name.toLowerCase().includes(q);
+  const favs=S.fav.filter(id=>P(id)&&match(id));
+  const recent=recentIds().filter(id=>match(id)&&!favs.includes(id)).slice(0,6);
+  let rest=allIds().filter(id=>match(id)&&!favs.includes(id)&&!recent.includes(id));
+  rest.sort((a,b)=>P(a).cat===P(b).cat?P(a).name.localeCompare(P(b).name):(D.cats.indexOf(P(a).cat)-D.cats.indexOf(P(b).cat)));
+  const row=id=>{
+    const p=P(id), c=calc(id,p.portion);
+    return `<div class="lrow">
+      <div class="lname" onclick="pickPortion('${id}')">${hdot(p.h)}${esc(p.name)}
+        <div class="tiny dim">${Math.round(c.k)} ккал · ${isUnit(p)?p.portion+' '+(p.unit==='порція'?'порц.':'шт'):p.portion+' '+p.unit}</div></div>
+      <button class="qadd" onclick="event.stopPropagation();quickAdd('${id}')">+</button>
+    </div>`;
+  };
+  let h='';
+  if(favs.length) h+='<div class="sect" style="margin-top:6px">★ Обране</div><div class="card" style="padding:0">'+favs.map(row).join('')+'</div>';
+  if(recent.length) h+='<div class="sect">Нещодавні</div><div class="card" style="padding:0">'+recent.map(row).join('')+'</div>';
+  if(rest.length) h+='<div class="sect">'+(q?'Знайдено':'Усі продукти')+'</div><div class="card" style="padding:0">'+rest.slice(0,q?50:200).map(row).join('')+'</div>';
+  if(!favs.length&&!recent.length&&!rest.length) h+='<div class="empty">Нічого не знайдено.</div>';
+  return h;
+}
+function recentIds(){
+  const seen=new Set(), out=[];
+  for(let i=0;i<14;i++)
+    for(const e of entries(addDays(TODAY,-i)))
+      if(e.pid&&P(e.pid)&&!seen.has(e.pid)){ seen.add(e.pid); out.push(e.pid); }
+  return out;
+}
+/** Один тап: типова порція одразу в щоденник (або в страву) */
+function quickAdd(id){
+  const p=P(id);
+  if(pickMode==='dish'){ dishDraft.ing.push({pid:id,qty:p.portion}); renderDish(); return; }
+  (S.diary[viewDate]=S.diary[viewDate]||[]).push(snapshot(id,p.portion));
+  save(); closeSheet(); render();
+}
+function pickPortion(id,editIdx){
+  const p=P(id);
+  const editing=editIdx!=null;
+  const entry=editing?entries(viewDate)[editIdx]:null;
+  const cur=editing?entry.qty:p.portion;
+  const curMeal=editing?mealFor(entry):mealOf(nowTime());
+  const unitLbl=isUnit(p)?(p.unit==='порція'?'порцій':'шт'):p.unit;
+  sheet(`<h2 style="font-size:17px;margin-bottom:4px">${hdot(p.h)}${esc(p.name)}</h2>
+    <div class="tiny dim" style="margin-bottom:12px">${esc(p.cat)} · ${isUnit(p)?p.kcal+' ккал за 1':p.kcal+' ккал / 100 '+p.unit}</div>
+    <label class="f">Порція, ${unitLbl}</label>
+    <input id="ptQ" type="number" inputmode="decimal" step="${isUnit(p)?0.5:10}" value="${cur}" oninput="ptPreview('${id}')">
+    <div class="row" style="gap:7px;margin-top:9px;flex-wrap:wrap">
+      ${[0.5,0.75,1,1.5,2].map(m=>`<button class="chip" onclick="ptMul('${id}',${m})">×${m}</button>`).join('')}
+    </div>
+    ${pickMode==='diary'?`<label class="f" style="margin-top:12px">Прийом</label>
+    <div class="row" style="gap:7px;flex-wrap:wrap">
+      ${MEAL_ORDER.map(m=>`<button class="chip mealchip ${m===curMeal?'on':''}" data-m="${m}" onclick="pickMeal('${m}')">${MEALS[m]}</button>`).join('')}
+    </div>`:''}
+    <div class="card" style="margin-top:12px"><div class="between">
+      <span class="muted small">Вийде</span><b id="ptK" style="font-size:18px"></b></div>
+      <div class="tiny dim" id="ptM" style="margin-top:4px"></div>
+    </div>
+    <button class="btn pri" style="margin-top:12px" onclick="${
+      pickMode==='dish'?`dishAdd('${id}')`:
+      editing?`saveEntryEdit(${editIdx},'${id}')`:`addEntry('${id}')`}">${editing?'Зберегти':'Додати'}</button>
+    ${editing?`<button class="btn gh sm" style="margin-top:8px;color:var(--bad)" onclick="delEntry(${editIdx})">Видалити запис</button>`:''}`);
+  ptPreview(id);
+}
+let chosenMeal=null;
+function pickMeal(m){
+  chosenMeal=m;
+  document.querySelectorAll('.mealchip').forEach(b=>b.classList.toggle('on',b.dataset.m===m));
+}
+function ptMul(id,m){ const p=P(id); const el=document.getElementById('ptQ'); el.value=isUnit(p)?r1(p.portion*m):Math.round(p.portion*m); ptPreview(id); }
+function ptPreview(id){
+  const q=+document.getElementById('ptQ').value||0, c=calc(id,q);
+  document.getElementById('ptK').textContent=Math.round(c.k)+' ккал';
+  document.getElementById('ptM').textContent='Білки '+r1(c.p)+' г · Жири '+r1(c.f)+' г · Вуглеводи '+r1(c.c)+' г';
+}
+function snapshot(id,q,meal){
+  const p=P(id), c=calc(id,q), tm=nowTime();
+  return { pid:id, name:p.name, qty:q, k:c.k, p:c.p, f:c.f, c:c.c, h:p.h, time:tm, meal:meal||mealOf(tm) };
+}
+function addEntry(id){
+  const q=+document.getElementById('ptQ').value||0; if(!q) return;
+  (S.diary[viewDate]=S.diary[viewDate]||[]).push(snapshot(id,q,chosenMeal));
+  chosenMeal=null; save(); closeSheet(); render();
+}
+function editEntry(i){
+  const e=entries(viewDate)[i];
+  chosenMeal=mealFor(e);
+  if(e.pid&&P(e.pid)) pickPortion(e.pid,i);
+  else sheet(`<h2 style="font-size:17px;margin-bottom:12px">${esc(e.name)}</h2>
+    <div class="muted small">Продукт видалено з бази — запис можна лише прибрати.</div>
+    <button class="btn gh sm" style="margin-top:12px;color:var(--bad)" onclick="delEntry(${i})">Видалити запис</button>`);
+}
+function saveEntryEdit(i,id){
+  const q=+document.getElementById('ptQ').value||0; if(!q) return;
+  const old=entries(viewDate)[i];
+  S.diary[viewDate][i]={...snapshot(id,q,chosenMeal||mealFor(old)), time:old.time};
+  chosenMeal=null; save(); closeSheet(); render();
+}
+function delEntry(i){ S.diary[viewDate].splice(i,1); save(); closeSheet(); render(); }
+
+/* ══════════════════════════════════════════════════════════════════
+   СТРАВИ (рецепти)
+   ══════════════════════════════════════════════════════════════════ */
+let dishDraft=null;
+function newDish(editId){
+  const src=editId?S.custom[editId]:null;
+  dishDraft={ id:editId||null, name:src?.name||'', ing:(src?.ingredients||[]).map(x=>({...x})) };
+  renderDish();
+}
+function renderDish(){
+  const dTot=dishDraft.ing.reduce((a,x)=>{const c=calc(x.pid,x.qty);return{k:a.k+c.k,p:a.p+c.p,f:a.f+c.f,c:a.c+c.c};},{k:0,p:0,f:0,c:0});
+  let h=`<h2 style="font-size:17px;margin-bottom:12px">${dishDraft.id?'Редагувати страву':'Нова страва'}</h2>
+    <label class="f">Назва</label>
+    <input id="dishName" value="${esc(dishDraft.name)}" placeholder="Йогуртова миска" oninput="dishDraft.name=this.value">`;
+  if(dishDraft.ing.length){
+    h+='<div class="card" style="margin-top:12px;padding:0">';
+    dishDraft.ing.forEach((x,i)=>{
+      const p=P(x.pid); if(!p) return;
+      const c=calc(x.pid,x.qty);
+      h+=`<div class="lrow">
+        <div class="lname">${esc(p.name)}<div class="tiny dim">${isUnit(p)?x.qty+' '+(p.unit==='порція'?'порц.':'шт'):Math.round(x.qty)+' '+p.unit} · ${Math.round(c.k)} ккал</div></div>
+        <input type="number" style="width:74px;padding:6px 8px" value="${x.qty}" step="${isUnit(p)?0.5:10}"
+          onchange="dishDraft.ing[${i}].qty=+this.value||0;renderDish()">
+        <button class="chip" onclick="dishDraft.ing.splice(${i},1);renderDish()">✕</button>
+      </div>`;
+    });
+    h+='</div>';
+    h+=`<div class="card" style="margin-top:10px"><div class="between"><span class="muted small">Разом</span>
+      <b>${Math.round(dTot.k)} ккал</b></div>
+      <div class="tiny dim" style="margin-top:4px">Б ${r1(dTot.p)} · Ж ${r1(dTot.f)} · В ${r1(dTot.c)}</div></div>`;
+  } else h+='<div class="empty">Додай інгредієнти — калорії та БЖВ порахуються самі.</div>';
+  h+=`<button class="btn sm" style="margin-top:12px" onclick="pickMode='dish';pickQ='';renderPick()">+ Додати інгредієнт</button>
+    <button class="btn pri" style="margin-top:10px" onclick="saveDish()">Зберегти страву</button>
+    ${dishDraft.id?`<button class="btn gh sm" style="margin-top:8px;color:var(--bad)" onclick="delProduct('${dishDraft.id}')">Видалити страву</button>`:''}`;
+  sheet(h);
+}
+function dishAdd(id){
+  const q=+document.getElementById('ptQ').value||0; if(!q) return;
+  dishDraft.ing.push({pid:id,qty:q});
+  renderDish();
+}
+function saveDish(){
+  if(!dishDraft.name.trim()){ alert('Вкажи назву страви.'); return; }
+  if(!dishDraft.ing.length){ alert('Додай хоча б один інгредієнт.'); return; }
+  const tot=dishDraft.ing.reduce((a,x)=>{const c=calc(x.pid,x.qty);return{k:a.k+c.k,p:a.p+c.p,f:a.f+c.f,c:a.c+c.c};},{k:0,p:0,f:0,c:0});
+  const hAvg=Math.round(dishDraft.ing.reduce((a,x)=>{const c=calc(x.pid,x.qty);return a+c.k*(P(x.pid)?.h||3);},0)/Math.max(tot.k,1));
+  const id=dishDraft.id||('c_'+Date.now());
+  const old=S.custom[id]||{};
+  S.custom[id]={ ...old, name:dishDraft.name.trim(), unit:'порція',
+    kcal:Math.round(tot.k), p:r1(tot.p), f:r1(tot.f), c:r1(tot.c),
+    h:Math.min(5,Math.max(1,hAvg)), portion:1, cat:'готові страви',
+    ingredients:dishDraft.ing.map(x=>({pid:x.pid,qty:x.qty})) };
+  dishDraft=null; pickMode='diary';
+  save(); closeSheet(); render();
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   ЕКРАН: БАЗА
+   ══════════════════════════════════════════════════════════════════ */
+let baseQ='';
+function vBase(V){
+  setHead('База продуктів', allIds().length+' позицій · ★ обране · головна цифра — твоя порція');
+  const q=baseQ.trim().toLowerCase();
+  const ids=allIds().filter(id=>P(id).name.toLowerCase().includes(q));
+  ids.sort((a,b)=>P(a).cat===P(b).cat?P(a).name.localeCompare(P(b).name):(D.cats.indexOf(P(a).cat)-D.cats.indexOf(P(b).cat)));
+
+  let h=`<div style="margin:12px 0"><input placeholder="Пошук по назві…" value="${esc(baseQ)}" oninput="baseQ=this.value;render()"></div>
+  <div class="f2"><button class="btn sm" onclick="newProduct()">+ Продукт</button>
+  <button class="btn sm" onclick="newDish()">+ Страва з інгредієнтів</button></div>`;
+  let lastCat='';
+  for(const id of ids){
+    const p=P(id), custom=!!S.custom[id], c=calc(id,p.portion);
+    if(p.cat!==lastCat){ if(lastCat)h+='</div>'; h+=`<div class="sect">${esc(p.cat)}</div><div class="card" style="padding:0">`; lastCat=p.cat; }
+    const per100=isUnit(p)?'':` · ${p.kcal} ккал/100${p.unit}`;
+    const priceInfo=(p.price&&p.p>0)?` · ${Math.round(isUnit(p)?p.price/p.p*100:p.price*10/p.p)} ₴/100 г білка`:'';
+    h+=`<div class="lrow">
+      <button class="star ${S.fav.includes(id)?'on':''}" onclick="toggleFav('${id}')">★</button>
+      <div class="lname" onclick="${custom?(p.ingredients?`newDish('${id}')`:`newProduct(null,'${id}')`):`showProduct('${id}')`}">${hdot(p.h)}${esc(p.name)}${custom?' <span class="tiny" style="color:var(--ac)">моє</span>':''}
+        <div class="tiny dim">Б ${p.p} Ж ${p.f} В ${p.c}${per100}${priceInfo}</div></div>
+      <div class="lqty"><b>${Math.round(c.k)}</b> <span class="tiny dim">ккал</span>
+        <div class="tiny dim">${p.portion} ${isUnit(p)?(p.unit==='порція'?'порц.':'шт'):p.unit}</div></div>
+    </div>`;
+  }
+  if(lastCat)h+='</div>';
+  if(!ids.length) h+='<div class="empty">Нічого не знайдено.</div>';
+  V.innerHTML=h;
+}
+function toggleFav(id){
+  const i=S.fav.indexOf(id);
+  if(i>=0)S.fav.splice(i,1); else S.fav.push(id);
+  save(); if(tab==='base')render();
+}
+function showProduct(id){
+  const p=P(id);
+  sheet(`<h2 style="font-size:17px;margin-bottom:4px">${hdot(p.h)}${esc(p.name)}</h2>
+    <div class="tiny dim" style="margin-bottom:10px">${esc(p.cat)} · базовий продукт (усереднено; етикетка пріоритетніша)</div>
+    <table>
+      <tr><td>Калорії</td><td>${p.kcal} ${isUnit(p)?'за 1':'на 100 '+p.unit}</td></tr>
+      <tr><td>Білки / Жири / Вуглеводи</td><td>${p.p} / ${p.f} / ${p.c} г</td></tr>
+      <tr><td>Оцінка корисності</td><td>${p.h} / 5</td></tr>
+      <tr><td>Типова порція</td><td>${p.portion} ${isUnit(p)?(p.unit==='порція'?'порц.':'шт'):p.unit} = ${Math.round(calc(id,p.portion).k)} ккал</td></tr>
+    </table>
+    <button class="btn sm" style="margin-top:12px" onclick="newProduct(null,null,'${id}')">Створити мою копію з іншими цифрами</button>
+    <button class="btn gh sm" style="margin-top:8px" onclick="closeSheet()">Закрити</button>`);
+}
+function newProduct(ret,editId,copyId){
+  const src=editId?S.custom[editId]:copyId?P(copyId):null;
+  const v=src||{name:'',unit:'г',kcal:'',p:'',f:'',c:'',h:3,portion:100,cat:'готові страви',price:''};
+  sheet(`<h2 style="font-size:17px;margin-bottom:12px">${editId?'Редагувати продукт':'Новий продукт'}</h2>
+    <label class="f">Назва</label>
+    <input id="npN" value="${esc(editId?v.name:(copyId?v.name+' (моє)':''))}" placeholder="Напр.: борщ мамин">
+    <div class="f2" style="margin-top:10px">
+      <div><label class="f">Одиниця</label><select id="npU">
+        ${['г','мл','шт','порція'].map(u=>`<option ${v.unit===u?'selected':''}>${u}</option>`).join('')}</select></div>
+      <div><label class="f">Типова порція</label><input id="npPor" type="number" value="${v.portion}"></div>
+    </div>
+    <div class="tiny dim" style="margin-top:8px">Для «г»/«мл» цифри — на 100 г/мл. Для «шт»/«порція» — на одну одиницю.</div>
+    <div class="f2" style="margin-top:10px">
+      <div><label class="f">Калорії</label><input id="npK" type="number" inputmode="decimal" value="${v.kcal}"></div>
+      <div><label class="f">Білки, г</label><input id="npP" type="number" inputmode="decimal" value="${v.p}"></div>
+    </div>
+    <div class="f2" style="margin-top:10px">
+      <div><label class="f">Жири, г</label><input id="npF" type="number" inputmode="decimal" value="${v.f}"></div>
+      <div><label class="f">Вуглеводи, г</label><input id="npC" type="number" inputmode="decimal" value="${v.c}"></div>
+    </div>
+    <div class="f2" style="margin-top:10px">
+      <div><label class="f">Корисність</label><select id="npH">
+        ${[5,4,3,2,1].map(x=>`<option value="${x}" ${v.h===x?'selected':''}>${x} — ${['','задоволення','зрідка','нейтрально','добре','основа раціону'][x]}</option>`).join('')}</select></div>
+      <div><label class="f">Категорія</label><select id="npCat">
+        ${D.cats.map(c=>`<option ${v.cat===c?'selected':''}>${c}</option>`).join('')}</select></div>
+    </div>
+    <label class="f" style="margin-top:10px">Ціна, ₴ за кг/л або за шт — необов'язково</label>
+    <input id="npPrice" type="number" inputmode="decimal" value="${v.price||''}" placeholder="для метрики ₴ за 100 г білка">
+    <button class="btn pri" style="margin-top:14px" onclick="saveProduct('${editId||''}','${ret||''}')">Зберегти</button>
+    ${editId?`<button class="btn gh sm" style="margin-top:8px;color:var(--bad)" onclick="delProduct('${editId}')">Видалити продукт</button>`:''}`);
+}
+function saveProduct(editId,ret){
+  const name=document.getElementById('npN').value.trim();
+  if(!name){ alert('Вкажи назву.'); return; }
+  const id=editId||('c_'+Date.now());
+  S.custom[id]={
+    name, unit:document.getElementById('npU').value,
+    kcal:+document.getElementById('npK').value||0,
+    p:+document.getElementById('npP').value||0,
+    f:+document.getElementById('npF').value||0,
+    c:+document.getElementById('npC').value||0,
+    h:+document.getElementById('npH').value||3,
+    portion:+document.getElementById('npPor').value||100,
+    cat:document.getElementById('npCat').value,
+    price:+document.getElementById('npPrice').value||undefined
+  };
+  save();
+  if(ret==='fromPick'){ renderPick(); } else { closeSheet(); render(); }
+}
+function delProduct(id){
+  if(!confirm('Видалити з бази? Записи в щоденнику збережуться.')) return;
+  delete S.custom[id]; S.fav=S.fav.filter(x=>x!==id);
+  dishDraft=null; pickMode='diary';
+  save(); closeSheet(); render();
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   ЕКРАН: ВИТРАТИ
+   ══════════════════════════════════════════════════════════════════ */
+function vSpend(V){
+  const d=parse(viewDate);
+  setHead('Витрати', DOW[d.getDay()]+', '+human(viewDate));
+  const es=S.expense[viewDate]||[];
+  const dayTotal=es.reduce((a,e)=>a+(+e.v||0),0);
+
+  let h=`<div class="between" style="margin:12px 0">
+    <button class="chip" onclick="shiftDay(-1)">‹ ${human(addDays(viewDate,-1))}</button>
+    ${viewDate===TODAY?'<span class="pill">сьогодні</span>':'<button class="chip" onclick="viewDate=TODAY;render()">до сьогодні</button>'}
+    <button class="chip" onclick="shiftDay(1)">${human(addDays(viewDate,1))} ›</button>
+  </div>`;
+
+  if(es.length){
+    h+='<div class="card" style="padding:0">';
+    es.forEach((e,i)=>{ h+=`<div class="lrow">
+      <div class="lname">${esc(e.n)}</div>
+      <div class="lqty"><b>${e.v} ₴</b></div>
+      <button class="chip" onclick="delSpend(${i})">✕</button></div>`; });
+    h+=`<div class="lrow"><div class="lname muted small">За день</div><div class="lqty"><b>${dayTotal} ₴</b></div><span style="width:32px"></span></div></div>`;
+  }
+  h+=`<div class="card" style="margin-top:10px">
+    <div class="f2"><div><label class="f">На що</label><input id="spN" placeholder="Продукти / шаурма / кола…"></div>
+    <div><label class="f">Скільки, ₴</label><input id="spV" type="number" inputmode="decimal" placeholder="0"></div></div>
+    <button class="btn pri sm" style="margin-top:10px" onclick="addSpend()">Додати витрату</button>
+  </div>`;
+
+  // місячне зведення + вартість харчування
+  const [y,m]=viewMonth.split('-').map(Number);
+  const groups={}; let mTotal=0; const spendDays=new Set();
+  for(const date in S.expense){
+    if(!date.startsWith(viewMonth)) continue;
+    for(const e of S.expense[date]){
+      const key=(e.n||'інше').trim().toLowerCase();
+      groups[key]=groups[key]||{name:e.n||'інше',v:0,n:0};
+      groups[key].v+=+e.v||0; groups[key].n++;
+      mTotal+=+e.v||0; spendDays.add(date);
+    }
+  }
+  let mKcal=0, kcalDays=0;
+  for(const date in S.diary){
+    if(!date.startsWith(viewMonth)||!entries(date).length) continue;
+    mKcal+=dayTotals(date).k; kcalDays++;
+  }
+  h+=`<div class="sect">Зведення за місяць</div>
+  <div class="card"><div class="between" style="margin-bottom:8px">
+    <button class="chip" onclick="shiftMonth(-1)">‹</button>
+    <b>${MONN[m-1]} ${y}</b>
+    <button class="chip" onclick="shiftMonth(1)">›</button></div>
+    <div class="stat3">
+      <div><b>${Math.round(mTotal)}</b><div class="tiny dim">₴ РАЗОМ</div></div>
+      <div><b>${spendDays.size?Math.round(mTotal/spendDays.size):'—'}</b><div class="tiny dim">₴ / ДЕНЬ</div></div>
+      <div><b>${mKcal?Math.round(mTotal/mKcal*1000):'—'}</b><div class="tiny dim">₴ / 1000 ККАЛ</div></div>
+    </div>
+    <div class="tiny dim" style="margin-top:8px">₴/день — по ${spendDays.size} дн. із записами витрат. ₴/1000 ккал — орієнтовно: витрати місяця поділені на з'їдені калорії (${kcalDays} дн. щоденника).</div>`;
+  const gs=Object.values(groups).sort((a,b)=>b.v-a.v);
+  if(gs.length){
+    h+='<hr><table>';
+    for(const g of gs) h+=`<tr><td>${esc(g.name)} <span class="dim tiny">×${g.n}</span></td><td>${Math.round(g.v)} ₴</td></tr>`;
+    h+='</table>';
+  } else h+='<div class="empty" style="padding:10px 0 2px">У цьому місяці записів немає.</div>';
+  h+=`<div class="tiny dim" style="margin-top:10px">Групування — за однаковою назвою: «продукти» одним рядком, «шаурма» чи «кола» окремо — як тобі зручно.</div></div>`;
+  V.innerHTML=h;
+}
+function addSpend(){
+  const n=document.getElementById('spN').value.trim();
+  const v=+document.getElementById('spV').value||0;
+  if(!n||!v){ alert('Вкажи назву і суму.'); return; }
+  (S.expense[viewDate]=S.expense[viewDate]||[]).push({n,v});
+  save(); render();
+}
+function delSpend(i){ S.expense[viewDate].splice(i,1); save(); render(); }
+function shiftMonth(n){
+  const [y,m]=viewMonth.split('-').map(Number);
+  viewMonth=iso(new Date(y,m-1+n,1)).slice(0,7); render();
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   ЕКРАН: АНАЛІТИКА
+   ══════════════════════════════════════════════════════════════════ */
+const RANGE=150;   // ± ккал «у межах цілі»
+function vStats(V){
+  setHead('Аналітика','Середнє за 7 днів важливіше за один день');
+  const days=[]; for(let i=6;i>=0;i--) days.push(addDays(TODAY,-i));
+  const rows=days.map(d=>({d,t:dayTotals(d),hi:healthIndex(d),target:kcalTarget(d),logged:entries(d).length>0}));
+  const logged=rows.filter(r=>r.logged);
+  const avgK=logged.length?Math.round(logged.reduce((a,r)=>a+r.t.k,0)/logged.length):0;
+  const avgT=logged.length?Math.round(logged.reduce((a,r)=>a+r.target,0)/logged.length):baseTarget();
+  const avgP=logged.length?Math.round(logged.reduce((a,r)=>a+r.t.p,0)/logged.length):0;
+  const inRange=logged.filter(r=>Math.abs(r.t.k-r.target)<=RANGE).length;
+  const dK=avgK-avgT;
+
+  let h=`<div class="card" style="margin-top:12px"><div class="stat3">
+    <div><b>${avgK||'—'}</b><div class="tiny dim">ККАЛ / ДЕНЬ</div>
+      ${avgK?`<div class="tiny" style="color:${dK<=0?'var(--ok)':'var(--warn)'}">${dK>0?'+':''}${dK} від цілі</div>`:''}</div>
+    <div><b>${avgP||'—'}<span class="tiny dim"> г</span></b><div class="tiny dim">БІЛОК</div>
+      ${avgP?`<div class="tiny dim">${Math.round(avgP/proteinTarget()*100)}% цілі</div>`:''}</div>
+    <div><b>${logged.length?inRange+' / '+logged.length:'—'}</b><div class="tiny dim">ДНІВ У ЦІЛІ</div>
+      <div class="tiny dim">±${RANGE} ккал</div></div>
+  </div></div>`;
+
+  // графік з лінією цілі
+  const max=Math.max(...rows.map(r=>Math.max(r.t.k,r.target)),1)*1.08;
+  const bandTop=(1-(avgT+RANGE)/max)*100, bandH=(2*RANGE)/max*100;
+  h+='<div class="sect">Калорії за 7 днів</div><div class="card">';
+  h+=`<div class="chart">
+    <div class="band" style="top:${bandTop}%;height:${bandH}%"></div>
+    <div class="cols">`;
+  for(const r of rows){
+    const v=r.t.k;
+    let cls='';
+    if(r.logged) cls = v>r.target+RANGE?'over' : v<r.target-RANGE?'under' : 'in';
+    h+=`<div class="${cls}" style="height:${Math.max(3,v/max*100)}%" title="${v}"></div>`;
+  }
+  h+='</div></div><div class="row" style="margin-top:6px">';
+  for(const r of rows) h+=`<div style="flex:1;text-align:center" class="tiny dim">${DOW[parse(r.d).getDay()]}</div>`;
+  h+=`</div><div class="tiny dim" style="margin-top:8px">Смуга — ціль ${avgT} ± ${RANGE} ккал. Синім — у межах, жовтим — перебір, темним — суттєвий недобір (це теж не добре для бігу).</div></div>`;
+
+  h+='<div class="card" style="margin-top:10px"><table>';
+  for(const r of rows){
+    h+=`<tr><td>${DOW[parse(r.d).getDay()]}, ${human(r.d)}</td>
+      <td>${r.logged?`<b>${r.t.k}</b> <span class="dim tiny">/ ${r.target}</span>${r.hi?` <span class="tiny" style="color:${r.hi.score>=70?'var(--ok)':r.hi.score>=45?'var(--warn)':'var(--bad)'}">●${r.hi.score}</span>`:''}`:'<span class="dim">—</span>'}</td></tr>`;
+  }
+  h+='</table></div>';
+
+  // вага: тренд
+  h+='<div class="sect">Вага</div>';
+  const ws=Object.keys(S.weight).sort();
+  const last=ws.length?S.weight[ws[ws.length-1]]:null;
+  const ma=maAt(TODAY,7);
+  const maPrev=maAt(addDays(TODAY,-14),7);
+  const rate=(ma!=null&&maPrev!=null)?(ma-maPrev)/2:null;   // кг/тиждень
+  const rec30=nearestWeight(addDays(TODAY,-30),7);
+  h+=`<div class="card"><div class="between" style="margin-bottom:${ws.length>=2?'10px':'0'}">
+    <div><b style="font-size:22px">${last!=null?r1(last)+' кг':'—'}</b>
+      <div class="tiny dim">${ws.length?'останній запис '+human(ws[ws.length-1]):'записуй раз на 2–3 дні вранці'}</div></div>
+    <button class="chip on" onclick="addWeight()">Записати</button></div>`;
+  if(ws.length>=2){
+    h+=`<table>
+      <tr><td>7-денне середнє <span class="dim tiny">(вага шумить — дивись сюди)</span></td><td>${ma!=null?ma.toFixed(1)+' кг':'—'}</td></tr>
+      <tr><td>Зміна за 30 днів</td><td>${rec30!=null&&last!=null?(last-rec30>0?'+':'')+(last-rec30).toFixed(1)+' кг':'—'}</td></tr>
+      <tr><td>Темп</td><td>${rate!=null?(rate>0?'+':'')+rate.toFixed(2)+' кг/тиждень':'мало даних'}</td></tr>
+    </table>`;
+    const wmax=Math.max(...ws.map(k=>S.weight[k])), wmin=Math.min(...ws.map(k=>S.weight[k]));
+    const span=Math.max(wmax-wmin,0.5);
+    h+='<div class="spark" style="margin-top:12px">';
+    for(const k of ws.slice(-21)) h+=`<div style="height:${8+(S.weight[k]-wmin)/span*88}%" title="${S.weight[k]}"></div>`;
+    h+='</div>';
+  }
+  h+='</div>';
+
+  // TDEE-калібрування
+  const tdee=estimateTDEE();
+  h+='<div class="sect">Твій реальний обмін</div>';
+  if(tdee){
+    h+=`<div class="card"><table>
+      <tr><td>Середнє споживання (${tdee.days} дн.)</td><td>${tdee.intake} ккал/день</td></tr>
+      <tr><td>Фактичний темп ваги</td><td>${(tdee.rate>0?'+':'')+tdee.rate.toFixed(2)} кг/тиждень</td></tr>
+      <tr><td><b>Оцінка реальної підтримки (TDEE)</b></td><td><b>${tdee.tdee} ккал</b></td></tr>
+      <tr><td>Формульна підтримка</td><td>${maintain()} ккал</td></tr>
+      <tr><td>Фактичний дефіцит</td><td>${tdee.deficit>0?'−':'+'}${Math.abs(tdee.deficit)} ккал/день</td></tr>
+    </table>
+    <div class="tiny dim" style="margin-top:10px">Рахується з твоїх даних: споживання за ${tdee.days} дн. + зміна ваги за той самий період (1 кг ≈ 7700 ккал). Що довше ведеш щоденник і вагу — то точніша цифра. Якщо вона стабільно відрізняється від формульної, вір їй, а не формулі.</div></div>`;
+  } else {
+    h+=`<div class="card"><div class="muted small">З'явиться автоматично, коли набереться ≥10 днів щоденника і ≥2 записи ваги з інтервалом від 2 тижнів. Тоді застосунок порахує твою реальну підтримку з фактичних даних — це точніше за будь-яку формулу.</div></div>`;
+  }
+
+  h+=`<div class="empty" style="margin-top:14px">Вага знижується поступово, голоду немає, тренування йдуть — усе працює.<br>Постійний голод або падіння якості бігу = раціон треба збільшувати.</div>`;
+  V.innerHTML=h;
+}
+/** Середня вага за вікно днів до дати (включно) */
+function maAt(date,win){
+  const vals=[];
+  for(let i=0;i<win;i++){ const v=S.weight[addDays(date,-i)]; if(v!=null) vals.push(v); }
+  return vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:null;
+}
+/** Найближчий запис ваги до дати (± tol днів) */
+function nearestWeight(date,tol){
+  for(let i=0;i<=tol;i++){
+    if(S.weight[addDays(date,-i)]!=null) return S.weight[addDays(date,-i)];
+    if(S.weight[addDays(date,i)]!=null) return S.weight[addDays(date,i)];
+  }
+  return null;
+}
+/** Оцінка реального TDEE за останні ≤28 днів */
+function estimateTDEE(){
+  const win=28;
+  const loggedDays=[];
+  for(let i=0;i<win;i++){ const d=addDays(TODAY,-i); if(entries(d).length) loggedDays.push(d); }
+  if(loggedDays.length<10) return null;
+  const ws=Object.keys(S.weight).filter(d=>d>=addDays(TODAY,-win)).sort();
+  if(ws.length<2) return null;
+  const spanDays=Math.max(1,(parse(ws[ws.length-1])-parse(ws[0]))/86400000);
+  if(spanDays<14) return null;
+  const intake=Math.round(loggedDays.reduce((a,d)=>a+dayTotals(d).k,0)/loggedDays.length);
+  const dW=S.weight[ws[ws.length-1]]-S.weight[ws[0]];
+  const ratePerDay=dW/spanDays;
+  const tdee=Math.round(intake - ratePerDay*7700);
+  return { intake, days:loggedDays.length, rate:ratePerDay*7, tdee, deficit:tdee-intake };
+}
+function addWeight(){
+  sheet(`<h2 style="font-size:17px;margin-bottom:12px">Вага сьогодні</h2>
+    <label class="f">кг</label><input id="wV" type="number" inputmode="decimal" step="0.1" value="${S.weight[TODAY]||''}" placeholder="0,0">
+    <button class="btn pri" style="margin-top:14px" onclick="saveWeight()">Зберегти</button>`);
+}
+function saveWeight(){
+  const v=+document.getElementById('wV').value;
+  if(v){ S.weight[TODAY]=v; S.profile.weight=v; }
+  save(); closeSheet(); render();
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   НАЛАШТУВАННЯ
+   ══════════════════════════════════════════════════════════════════ */
+function openSettings(){
+  const p=S.profile;
+  sheet(`<h2 style="font-size:17px;margin-bottom:14px">Налаштування</h2>
+    <div class="sect" style="margin-top:0">Профіль</div>
+    <div class="f3">
+      <div><label class="f">Стать</label><select id="stSex">
+        <option value="m" ${p.sex==='m'?'selected':''}>чол</option>
+        <option value="f" ${p.sex==='f'?'selected':''}>жін</option></select></div>
+      <div><label class="f">Вік</label><input id="stAge" type="number" value="${p.age}"></div>
+      <div><label class="f">Зріст, см</label><input id="stH" type="number" value="${p.height}"></div>
+    </div>
+    <div class="f2" style="margin-top:10px">
+      <div><label class="f">Вага, кг</label><input id="stW" type="number" step="0.1" value="${p.weight}"></div>
+      <div><label class="f">Повсякденна активність</label><select id="stAct">
+        <option value="1.2" ${p.activity==1.2?'selected':''}>сидяча</option>
+        <option value="1.3" ${p.activity==1.3?'selected':''}>офіс + прогулянки</option>
+        <option value="1.4" ${p.activity==1.4?'selected':''}>багато на ногах</option>
+      </select></div>
+    </div>
+    <label class="f" style="margin-top:12px">Режим</label>
+    <select id="stMode" onchange="modeHint()">
+      ${Object.entries(MODES).map(([k,m])=>`<option value="${k}" ${p.mode===k?'selected':''}>${m.name} (${m.hint})</option>`).join('')}
+    </select>
+    <div id="modeWarn" class="tiny" style="margin-top:8px;color:var(--warn);${p.mode==='fast'?'':'display:none'}">Швидкий режим погано поєднується з довгими пробіжками: страждає відновлення. Рекомендую «Помірний» або «Середній».</div>
+    <label class="f" style="margin-top:12px">Враховувати тренування в денній цілі</label>
+    <div class="row" style="gap:7px">
+      ${[0,0.5,1].map(x=>`<button class="chip wpct ${p.workoutPct===x?'on':''}" data-x="${x}" onclick="setWpct(${x})">${x*100}%</button>`).join('')}
+    </div>
+    <div class="tiny dim" style="margin-top:8px">Фітнес-трекери завищують витрати, тому 100% — ризик «від'їдати» неіснуючий видаток. 50% — розумний компроміс для бігуна.</div>
+    <div class="card" style="margin-top:12px"><table>
+      <tr><td>Базовий обмін (Міффлін–Сан Жеор)</td><td>${bmr()} ккал</td></tr>
+      <tr><td>Підтримання (без тренувань)</td><td>${maintain()} ккал</td></tr>
+      <tr><td>Денна ціль</td><td><b>${baseTarget()} ккал</b> + тренування</td></tr>
+      <tr><td>Ціль білка (1,7 г/кг)</td><td>${proteinTarget()} г</td></tr>
+    </table><div class="tiny dim" style="margin-top:8px">Нижче за базовий обмін ціль не опускається ніколи.</div></div>
+    <button class="btn pri" style="margin-top:12px" onclick="saveSettings()">Зберегти</button>
+    <hr>
+    <div class="sect" style="margin-top:0">Дані</div>
+    <button class="btn" onclick="exportJSON()">⬇ Зберегти резервну копію</button>
+    <button class="btn" style="margin-top:8px" onclick="document.getElementById('impF').click()">⬆ Відновити з копії</button>
+    <input type="file" id="impF" accept="application/json" class="hide" onchange="importJSON(this)">
+    <button class="btn gh sm" style="margin-top:8px;color:var(--bad)" onclick="wipe()">Стерти всі записи</button>
+    <div class="tiny dim" style="margin-top:14px">Дані живуть лише на цьому пристрої. База v${D.meta.version} від ${D.meta.updated}.</div>`);
+}
+let wpctDraft=null;
+function setWpct(x){
+  wpctDraft=x;
+  document.querySelectorAll('.wpct').forEach(b=>b.classList.toggle('on',+b.dataset.x===x));
+}
+function modeHint(){
+  document.getElementById('modeWarn').style.display=
+    document.getElementById('stMode').value==='fast'?'block':'none';
+}
+function saveSettings(){
+  const p=S.profile;
+  p.sex=document.getElementById('stSex').value;
+  p.age=+document.getElementById('stAge').value||p.age;
+  p.height=+document.getElementById('stH').value||p.height;
+  p.weight=+document.getElementById('stW').value||p.weight;
+  p.activity=+document.getElementById('stAct').value||1.3;
+  p.mode=document.getElementById('stMode').value;
+  if(wpctDraft!=null) p.workoutPct=wpctDraft;
+  wpctDraft=null;
+  save(); closeSheet(); render();
+}
+function dl(name,text,type){
+  const b=new Blob([text],{type:type||'text/plain;charset=utf-8'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=name; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+}
+function exportJSON(){ dl('meals-backup-'+TODAY+'.json',JSON.stringify(S,null,2),'application/json'); }
+function importJSON(inp){
+  const f=inp.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=()=>{ try{ S=JSON.parse(r.result); save(); closeSheet(); render(); alert('Відновлено.'); }
+    catch(e){ alert('Не вдалося прочитати файл.'); } };
+  r.readAsText(f);
+}
+function wipe(){ if(confirm('Стерти щоденник, витрати, вагу і власні продукти?')){ S=blank(); save(); closeSheet(); render(); } }
+
+/* ══════════════════════════════════════════════════════════════════
+   СТАРТ
+   ══════════════════════════════════════════════════════════════════ */
+setInterval(()=>{ const n=iso(new Date()); if(n!==TODAY){ if(viewDate===TODAY)viewDate=n; TODAY=n; render(); } },60000);
+render();
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
